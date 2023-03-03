@@ -1,4 +1,8 @@
 import json
+<<<<<<< HEAD
+=======
+#import json 
+>>>>>>> 2105e9bdfc55d6f89008d6037f0973266207fd62
 import boto3
 import uuid
 import datetime
@@ -155,9 +159,9 @@ def ecs_convert_falco_log_to_asff(entry):
       instance = get_ec2_details(instance_id)
     except:
       print("PROBLEM: ECS to ASFF looks like there's no element for 'ec2_instance_id'")
-      
+   
     finally:
-      print("TEST: ECS to ASFF got EC2 instance: ", instance)   
+      print("DEBUG: ECS to ASFF got EC2 instance: ", instance)   
     # ending try-catch block
     
     # parse 'log' element 
@@ -178,6 +182,7 @@ def ecs_convert_falco_log_to_asff(entry):
     
     # get account ID and derived objects
     account_id= get_account_id()
+    
     this_id = generate_id(account_id,region)
     print ("CHECK: ECS to ASFF got account ID, this_id ", account_id, this_id)
     
