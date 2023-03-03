@@ -1,8 +1,4 @@
 import json
-<<<<<<< HEAD
-=======
-#import json 
->>>>>>> 2105e9bdfc55d6f89008d6037f0973266207fd62
 import boto3
 import uuid
 import datetime
