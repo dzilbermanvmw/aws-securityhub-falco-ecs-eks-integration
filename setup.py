@@ -7,7 +7,8 @@ with open("README.md") as fp:
 
 setuptools.setup(
     name="aws_securityhub_falco_ecs_eks_integration",
-    version="0.0.1",
+    #DZ: updated version
+    version="0.0.2",
 
     description="An empty CDK Python app",
     long_description=long_description,
@@ -27,7 +28,7 @@ setuptools.setup(
     classifiers=[
         "Development Status :: 4 - Beta",
 
-        "Intended Audience :: Developers",
+        "Intended Audience :: Developers-DevOps",
 
         "Programming Language :: JavaScript",
         "Programming Language :: Python :: 3 :: Only",
