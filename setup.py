@@ -20,7 +20,8 @@ setuptools.setup(
     packages=setuptools.find_packages(where="aws_securityhub_falco_ecs_eks_integration"),
 
     install_requires=[
-        "aws-cdk.core==1.116.0",
+        #DZ: updated CDK version
+        "aws-cdk.core==2.65.0",
     ],
 
     python_requires=">=3.6",
