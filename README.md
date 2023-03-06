@@ -1,8 +1,8 @@
-## Custom integration for Falco findings from Amazon Elastic Kubernetes Service (Amazon EKS) and Amazon Elastic Container Service (Amazon ECS), into AWS Security Hub
+## Custom integration for Falco security findings from Amazon Elastic Kubernetes Service (Amazon EKS) and Amazon Elastic Container Service (Amazon ECS), into AWS Security Hub
 
-The project deploys a Lambda function, that enables generating Falco findings into Security Hub
+The project deploys a Lambda function, that enables receiving Falco security findings from AWS CloudWatch logs and integrating into Security Hub
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+The `cdk.json` file instructs the CDK Toolkit how to execute your app.
 
 This project is set up like a standard Python project.  The initialization
 process also creates a virtualenv within this project, stored under the `.venv`
@@ -18,7 +18,7 @@ $ python3 -m venv .venv
 ```
 
 After the init process completes and the virtualenv is created, you can use the following
-step to activate your virtualenv.
+steps to activate your virtualenv:
 
 ```
 $ source .venv/bin/activate
