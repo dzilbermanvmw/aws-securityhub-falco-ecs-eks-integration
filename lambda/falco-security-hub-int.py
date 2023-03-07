@@ -15,7 +15,7 @@ ecs = session.client('ecs')
 #Get EC2 instance by its ID
 def get_ec2_details(instance_id):
         instance = ec2.Instance(instance_id)
-        print("get_ec2_details got instance: ",instance)
+        #print("get_ec2_details got instance: ",instance)
         return instance
     
 #Get account ID 
@@ -155,9 +155,9 @@ def ecs_convert_falco_log_to_asff(entry):
       instance = get_ec2_details(instance_id)
     except:
       print("PROBLEM: ECS to ASFF looks like there's no element for 'ec2_instance_id'")
-   
+      
     finally:
-      print("DEBUG: ECS to ASFF got EC2 instance: ", instance)   
+      print("TEST: ECS to ASFF got EC2 instance: ", instance)   
     # ending try-catch block
     
     # parse 'log' element 
@@ -178,7 +178,6 @@ def ecs_convert_falco_log_to_asff(entry):
     
     # get account ID and derived objects
     account_id= get_account_id()
-    
     this_id = generate_id(account_id,region)
     print ("CHECK: ECS to ASFF got account ID, this_id ", account_id, this_id)
     
@@ -269,12 +268,17 @@ def get_eks_details(message):
     if fields is None:
        print("PROBLEM get_eks_details - no data for 'output_fields', cannot retrieve details! ", fields)    
     else:    
-       
-       container_id = fields["container.id"]
-       pod_name = fields["k8s.pod.name"]
-       namespace = fields["k8s.ns.name"]
-       image = fields["container.image.repository"]
-
+       try:
+          container_id = fields["container.id"]
+          pod_name = fields["k8s.pod.name"]
+          namespace = fields["k8s.ns.name"]
+          image = fields["container.image.repository"]
+       except:
+          print("PROBLEM: get EKS details - looks like there's no EXPECTED container element in 'output_fields' above!")
+       finally:
+          print ("DEBUG: get EKS details - container details (partially) retrieved from 'output_fields'") 
+          print ("-------------------------------------------------------------------------")
+          
     #initialize and start forming resources array
     resources = []
     resource = {}
@@ -304,9 +308,9 @@ def eks_convert_falco_log_to_asff(entry):
     try: 
       instance_id = entry["ec2_instance_id"]
       instance = get_ec2_details(instance_id)
-      print("EKS to ASFF: got instance_id, instance: ",instance_id,instance)
+      print("DEBUG: EKS to ASFF: got instance_id, instance: ",instance_id,instance)
     except:
-      print("EKS to ASFF: looks like there's no element for 'ec2_instance_id'")
+      print("PROBLEM: EKS to ASFF: looks like there's no element for 'ec2_instance_id'")
    
     finally:
       #print("EKS to ASFF got ec2_instance: ", instance)
@@ -355,7 +359,7 @@ def eks_convert_falco_log_to_asff(entry):
     resources = []
     resources.append(instance_resource)
     for container_resource in eks_resources:
-        print (" ========> adding EKS resource: ", container_resource)
+        print (" ========> DEBUG: adding EKS resource: ", container_resource)
         resources.append(container_resource)
 
     #Start forming ASFF message using known JSON format
@@ -386,8 +390,8 @@ def lambda_handler(event, context):
     data = json.loads(gzip.decompress(data_decoded).decode('utf-8'))
     
     findings = []
-    #iterate Log events, determine which ones are ECS cluster of EKS cluster related and process Falco logs
-    #to form ASFF formatted securoty findings
+    #iterate through data['logEvents'], determine which ones are ECS cluster of EKS cluster related and process Falco logs
+    #to form ASFF formatted security findings
     
     for entry in data['logEvents']:
         message = json.loads(entry['message'])
@@ -395,7 +399,7 @@ def lambda_handler(event, context):
         if "ecs_cluster" in message:
             # Add debug print
             print ("-------------------------------------------------------------")
-            print ("DEBUG: BEFORE calling ecs_convert_falco_log_to_asff LOG Data type: ", type(message))
+            print ("FALCO DEBUG: BEFORE calling ecs_convert_falco_log_to_asff LOG Data type: ", type(message))
             print ("-------------------------------------------------------------")
             # end debug print
             finding = ecs_convert_falco_log_to_asff(message)
@@ -403,12 +407,12 @@ def lambda_handler(event, context):
         elif "ec2_instance_id" in message:
             # Add debug print
             print ("-------------------------------------------------------------")
-            print ("DEBUG: BEFORE calling eks_convert_falco_log_to_asff LOG entry Data type: ", type(message))
+            print ("FALCO DEBUG: BEFORE calling eks_convert_falco_log_to_asff LOG entry Data type: ", type(message))
             print ("-------------------------------------------------------------")
             # end debug print
             finding = eks_convert_falco_log_to_asff(message)
         else:
-            print ("===> Unknown CW Log event message type detected - DONT KNOW HOW TO PROCESS!")
+            print ("PROBLEM ===>  Unknown CW Log event message type detected (not ECS, EKS) - DONT KNOW HOW TO PROCESS! <===")
 
         #after getting security findings, append it to an array
         #print ("RESULT: AFTER calling XXXX_convert_falco_log_to_asff ASFF finding is: ", finding)
@@ -416,7 +420,7 @@ def lambda_handler(event, context):
         
         #DZ: ignore 'empy' findings that may not be actual errors
         if finding is None:
-           print(" FALCO DEBUG: Cannot append EMPTY finding to 'findings' array")    
+           print(" FALCO PROBLEM: Cannot append EMPTY finding to 'findings' array")    
         else:    
            findings.append(finding)
            #print("FALCO DEBUG: Appended ASFF to findings: ", finding)
