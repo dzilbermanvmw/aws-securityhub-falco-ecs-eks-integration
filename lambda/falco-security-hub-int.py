@@ -203,6 +203,8 @@ def ecs_convert_falco_log_to_asff(entry):
     finding["SchemaVersion"] = "2018-10-08"
     finding["AwsAccountId"] = account_id
     finding["Id"] = this_id
+    #DZ; added for AB3
+    finding["CompanyName"] = "AnyCompany"
     finding["Description"] = str(logEntry["output"])
     finding["GeneratorId"] = instance_id + "-" + this_id.split("/")[-1]
     finding["ProductArn"] = f"arn:{PARTITION}:securityhub:{region}:{account_id}:product/{account_id}/default"
@@ -367,6 +369,8 @@ def eks_convert_falco_log_to_asff(entry):
     finding["SchemaVersion"] = "2018-10-08"
     finding["AwsAccountId"] = account_id
     finding["Id"] = this_id
+    #DZ: added for AB3
+    finding["CompanyName"] = "AnyCompany"
     finding["Description"] = output
     finding["GeneratorId"] = instance_id + "-" + this_id.split("/")[-1]
     finding["ProductArn"] = f"arn:{PARTITION}:securityhub:{region}:{account_id}:product/{account_id}/default"
@@ -442,11 +446,7 @@ def parseJSON(source):
 
    #"log": "2023-02-02T00:43:56.734263328Z stdout F {\"hostname\":\"falco-z95gm\",\"output\":\"21:17:02.642052704: Error File below /etc opened for writing 
    # (user=<NA> user_loginuid=-1 command=touch /etc/26 pid=22583 parent=bash pcmdline=bash file=/etc/26 program=touch gparent=<NA> ggparent=<NA> gggparent=<NA> 
-   # container_id=f687a1640776 image=docker.io/library/nginx) k8s.ns=default k8s.pod=nginx-test2 container=f687a1640776\",
-   # \"priority\":\"Error\",\"rule\":\"Write below etc\",\"source\":\"syscall\",\"tags\":[\"filesystem\",\"mitre_persistence\"],\"time\":\"2023-02-01T21:17:02.642052704Z\",
-   # \"output_fields\": {\"container.id\":\"f687a1640776\",\"container.image.repository\":\"docker.io/library/nginx\",\"evt.time\":1675286222642052704,\"fd.name\":\"/etc/26\",
-   # \"k8s.ns.name\":\"default\",\"k8s.pod.name\":\"nginx-test2\",\"proc.aname[2]\":null,
-   # \"proc.aname[3]\":null,\"proc.aname[4]\":null,\"proc.cmdline\":\"touch /etc/26\",\"proc.name\":\"touch\",\"proc.pcmdline\":\"bash\",\"proc.pid\":22583,\"proc.pname\":\"bash\",\"user.loginuid\":-1,\"user.name\":\"<NA>\"}}"
+   #....
    # printing original string
    
    # print("DEBUG: INSIDE parseJSON the original string is: ", str(source))
