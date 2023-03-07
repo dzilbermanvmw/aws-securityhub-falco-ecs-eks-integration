@@ -151,7 +151,7 @@ def ecs_convert_falco_log_to_asff(entry):
     # Starting try-catch block
     try: 
       instance_id = entry["ec2_instance_id"]
-      print("CHECK: ECS to ASFF got instance_id: ",instance_id)
+      #print("CHECK: ECS to ASFF got instance_id: ",instance_id)
       instance = get_ec2_details(instance_id)
     except:
       print("PROBLEM: ECS to ASFF looks like there's no element for 'ec2_instance_id'")
@@ -203,7 +203,7 @@ def ecs_convert_falco_log_to_asff(entry):
     finding["SchemaVersion"] = "2018-10-08"
     finding["AwsAccountId"] = account_id
     finding["Id"] = this_id
-    #DZ; added for AB3
+    #DZ: added for AB3
     finding["CompanyName"] = "AnyCompany"
     finding["Description"] = str(logEntry["output"])
     finding["GeneratorId"] = instance_id + "-" + this_id.split("/")[-1]
@@ -211,7 +211,7 @@ def ecs_convert_falco_log_to_asff(entry):
     finding["Severity"] = severity
     finding["Resources"] = resources
     finding["Title"] = logEntry["rule"]
-    finding["Types"] = ["Software and Configuration Checks"]
+    finding["Types"] = ["Container Software and Configuration Checks"]
     now = datetime.datetime.now()
     #Lambda is UTC
     finding["UpdatedAt"] = f"{now.isoformat(timespec='milliseconds')}Z"
@@ -378,7 +378,7 @@ def eks_convert_falco_log_to_asff(entry):
     finding["Resources"] = resources
     #finding["Title"] = entry["log"]["rule"]
     finding["Title"] = logEntry["rule"]
-    finding["Types"] = ["Software and Configuration Checks"]
+    finding["Types"] = ["Container Software and Configuration Checks"]
     now = datetime.datetime.now()
     #Lambda is UTC time zone
     finding["UpdatedAt"] = f"{now.isoformat(timespec='milliseconds')}Z"
@@ -400,6 +400,7 @@ def lambda_handler(event, context):
     for entry in data['logEvents']:
         message = json.loads(entry['message'])
         #determine which app platform source of log message it is - ECS or EKS - and call corresponding function
+        #DZ: ECS cluster always has 'ecs_cluster' in the message
         if "ecs_cluster" in message:
             # Add debug print
             print ("-------------------------------------------------------------")
@@ -407,8 +408,9 @@ def lambda_handler(event, context):
             print ("-------------------------------------------------------------")
             # end debug print
             finding = ecs_convert_falco_log_to_asff(message)
-        #DZ: added condition for expected EKS cluster if "ec2_instance_id"
-        elif "ec2_instance_id" in message:
+        #DZ: added condition for expected EKS cluster if 
+        #formatted Falco messages alsways have "ec2_instance_type" field is present 
+        elif "ec2_instance_type" in message:
             # Add debug print
             print ("-------------------------------------------------------------")
             print ("FALCO DEBUG: BEFORE calling eks_convert_falco_log_to_asff LOG entry Data type: ", type(message))
@@ -446,11 +448,10 @@ def parseJSON(source):
 
    #"log": "2023-02-02T00:43:56.734263328Z stdout F {\"hostname\":\"falco-z95gm\",\"output\":\"21:17:02.642052704: Error File below /etc opened for writing 
    # (user=<NA> user_loginuid=-1 command=touch /etc/26 pid=22583 parent=bash pcmdline=bash file=/etc/26 program=touch gparent=<NA> ggparent=<NA> gggparent=<NA> 
-   #....
+   #
    # printing original string
    
    # print("DEBUG: INSIDE parseJSON the original string is: ", str(source))
-   
 
    # res = source[idx1: idx2+2] # idx2+1 b/c we need the 2nd closing }}
    res = source.replace('\"','"')
