@@ -21,10 +21,10 @@ setuptools.setup(
 
     install_requires=[
         #DZ: updated CDK version
-        "aws-cdk.core==2.65.0",
+        "aws-cdk.core==1.185.0",
     ],
 
-    python_requires=">=3.6",
+    python_requires=">=3.7",
 
     classifiers=[
         "Development Status :: 4 - Beta",
