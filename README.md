@@ -1,8 +1,8 @@
 ## Custom integration for Falco security findings from Amazon Elastic Kubernetes Service (Amazon EKS) and Amazon Elastic Container Service (Amazon ECS), into AWS Security Hub
 
-The project deploys a Lambda function, that enables receiving Falco security findings from AWS CloudWatch logs and integrating into Security Hub
+The project deploys a Lambda function, that enables receiving Falco security findings from AWS CloudWatch logs, formatting them in ASFF JSON format and integrating into Security Hub
 
-The `cdk.json` file instructs the CDK Toolkit how to execute your app.
+The `cdk.json` file instructs the CDK Toolkit how to execute your app - updated for CDK 2.0 per: https://docs.aws.amazon.com/cdk/v2/guide/migrating-v2.html.
 
 This project is set up like a standard Python project.  The initialization
 process also creates a virtualenv within this project, stored under the `.venv`
