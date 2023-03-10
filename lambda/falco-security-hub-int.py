@@ -400,7 +400,7 @@ def lambda_handler(event, context):
     for entry in data['logEvents']:
         message = json.loads(entry['message'])
         #determine which app platform source of log message it is - ECS or EKS - and call corresponding function
-        #DZ: ECS cluster always has 'ecs_cluster' in the message
+        #DZ: ECS cluster logs always has 'ecs_cluster' in the message
         if "ecs_cluster" in message:
             # Add debug print
             print ("-------------------------------------------------------------")
@@ -409,7 +409,7 @@ def lambda_handler(event, context):
             # end debug print
             finding = ecs_convert_falco_log_to_asff(message)
         #DZ: added condition for expected EKS cluster if 
-        #formatted Falco messages alsways have "ec2_instance_type" field is present 
+        #formatted Falco messages alsways have "ec2_instance_type" field is present - depends to FluentBit [FILTER] configuration 
         elif "ec2_instance_type" in message:
             # Add debug print
             print ("-------------------------------------------------------------")
@@ -418,7 +418,8 @@ def lambda_handler(event, context):
             # end debug print
             finding = eks_convert_falco_log_to_asff(message)
         else:
-            print ("PROBLEM ===>  Unknown CW Log event message type detected (not ECS, EKS) - DONT KNOW HOW TO PROCESS! <===")
+            finding = None
+            print ("FALCO DEBUG: ===>  Unknown CW Log event message type detected (not from ECS, EKS) - DONT KNOW HOW TO PROCESS! <===")
 
         #after getting security findings, append it to an array
         #print ("RESULT: AFTER calling XXXX_convert_falco_log_to_asff ASFF finding is: ", finding)
@@ -426,10 +427,10 @@ def lambda_handler(event, context):
         
         #DZ: ignore 'empy' findings that may not be actual errors
         if finding is None:
-           print(" FALCO PROBLEM: Cannot append EMPTY finding to 'findings' array")    
+           print(" FALCO DEBUG: Could not determine finding to append to 'findings' array")    
         else:    
            findings.append(finding)
-           #print("FALCO DEBUG: Appended ASFF to findings: ", finding)
+           print("FALCO DEBUG: Appended ASFF to findings: ", finding)
     #end of for loop
     
     #batch import ASFF formatted findings into SecurityHub
